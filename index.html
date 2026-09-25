@@ -1,0 +1,1276 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Creamy Corner | Table Reservation</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f3ef;
+            color: #3b2a22;
+        }
+
+        header {
+            background: #3b2a22;
+            color: white;
+            padding: 22px 8%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 50px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            padding: 10px 15px;
+            border-radius: 20px;
+            background: #ddd;
+            font-size: 14px;
+        }
+
+        .step.active {
+            background: #8b5e3c;
+            color: white;
+        }
+
+        .step.done {
+            background: #4f7d54;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        }
+
+        /* ================= RESERVATION LAYOUT ================= */
+
+        .reservation-layout {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 30px;
+            align-items: stretch;
+        }
+
+        .cafe-image {
+            min-height: 600px;
+            border-radius: 15px;
+
+            background-image:
+                linear-gradient(
+                    rgba(50, 30, 20, 0.25),
+                    rgba(50, 30, 20, 0.45)
+                ),
+                url("download (3).jpg");
+
+            background-size: cover;
+            background-position: center;
+        }
+
+        .reservation-form {
+            min-width: 0;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .error {
+            color: #c0392b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        button {
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: #8b5e3c;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #70482e;
+        }
+
+        .secondary {
+            background: #eee;
+            color: #333;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary {
+            background: #f8f4f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        /* ================= PAYMENT ================= */
+
+        .payment-options {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .payment-option.selected {
+            border-color: #8b5e3c;
+            background: #faf5f1;
+        }
+
+        .card-fields {
+            display: none;
+        }
+
+        .card-fields.show {
+            display: block;
+        }
+
+        /* ================= SUCCESS ================= */
+
+        .success {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background: #e4f2e5;
+            color: #4f7d54;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            margin: 0 auto 20px;
+        }
+
+        .booking-id {
+            margin: 25px auto;
+            padding: 20px;
+            background: #f8f4f1;
+            border-radius: 10px;
+            max-width: 350px;
+        }
+
+        .booking-id strong {
+            display: block;
+            font-size: 24px;
+            color: #8b5e3c;
+            margin-top: 8px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width: 900px) {
+
+            .reservation-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cafe-image {
+                min-height: 350px;
+            }
+        }
+
+        @media(max-width:700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            .payment-options {
+                flex-direction: column;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .steps {
+                flex-wrap: wrap;
+            }
+
+            .cafe-image {
+                min-height: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <strong>Creamy Corner</strong>
+    <span>Table Reservation</span>
+</header>
+
+
+<div class="container">
+
+    <h1>Reserve Your Table</h1>
+
+    <p class="subtitle">
+        Book your table at Creamy Corner
+    </p>
+
+
+    <!-- STEPS -->
+
+    <div class="steps">
+
+        <div id="step1" class="step active">
+            1. Reservation
+        </div>
+
+        <div id="step2" class="step">
+            2. Payment
+        </div>
+
+        <div id="step3" class="step">
+            3. Confirmation
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+
+        <!-- ================= RESERVATION ================= -->
+
+        <div
+            id="reservationSection"
+            class="section active"
+        >
+
+            <div class="reservation-layout">
+
+                <!-- CAFE IMAGE -->
+
+                <div class="cafe-image"></div>
+
+
+                <!-- RESERVATION FORM -->
+
+                <div class="reservation-form">
+
+                    <h2>Reservation Details</h2>
+
+                    <p class="description">
+                        Enter your information to reserve a table.
+                    </p>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label>Full Name *</label>
+
+                            <input
+                                id="name"
+                                type="text"
+                                placeholder="Enter your name"
+                            >
+
+                            <span
+                                id="nameError"
+                                class="error"
+                            >
+                                Please enter your name.
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Email *</label>
+
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="example@email.com"
+                            >
+
+                            <span
+                                id="emailError"
+                                class="error"
+                            >
+                                Please enter a valid email.
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Phone *</label>
+
+                            <input
+                                id="phone"
+                                type="tel"
+                                placeholder="01XXXXXXXXX"
+                            >
+
+                            <span
+                                id="phoneError"
+                                class="error"
+                            >
+                                Please enter a valid phone number.
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Number of Guests *</label>
+
+                            <select id="guests">
+
+                                <option value="">
+                                    Select guests
+                                </option>
+
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5 Guests</option>
+                                <option value="6">6 Guests</option>
+                                <option value="7">7 Guests</option>
+                                <option value="8">8 Guests</option>
+
+                            </select>
+
+                            <span
+                                id="guestsError"
+                                class="error"
+                            >
+                                Please select number of guests.
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Date *</label>
+
+                            <input
+                                id="date"
+                                type="date"
+                            >
+
+                            <span
+                                id="dateError"
+                                class="error"
+                            >
+                                Please select a date.
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Time *</label>
+
+                            <select id="time">
+
+                                <option value="">
+                                    Select time
+                                </option>
+
+                                <option value="05:00 PM">
+                                    05:00 PM
+                                </option>
+
+                                <option value="06:00 PM">
+                                    06:00 PM
+                                </option>
+
+                                <option value="07:00 PM">
+                                    07:00 PM
+                                </option>
+
+                                <option value="08:00 PM">
+                                    08:00 PM
+                                </option>
+
+                                <option value="09:00 PM">
+                                    09:00 PM
+                                </option>
+
+                                <option value="10:00 PM">
+                                    10:00 PM
+                                </option>
+
+                            </select>
+
+                            <span
+                                id="timeError"
+                                class="error"
+                            >
+                                Please select a time.
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Table Preference</label>
+
+                            <select id="table">
+
+                                <option>
+                                    Any Available Table
+                                </option>
+
+                                <option>
+                                    Indoor Table
+                                </option>
+
+                                <option>
+                                    Window Table
+                                </option>
+
+                                <option>
+                                    Outdoor Table
+                                </option>
+
+                                <option>
+                                    Private Table
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>Special Requests</label>
+
+                            <textarea
+                                id="requests"
+                                placeholder="Any special requests?"
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="buttons">
+
+                        <button
+                            type="button"
+                            class="primary"
+                            id="continueButton"
+                        >
+                            Continue to Payment →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= PAYMENT ================= -->
+
+        <div
+            id="paymentSection"
+            class="section"
+        >
+
+            <h2>Deposit & Payment</h2>
+
+            <p class="description">
+                Choose your preferred payment method.
+            </p>
+
+
+            <div class="summary">
+
+                <div class="summary-row">
+                    <span>Name</span>
+                    <strong id="summaryName">-</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Date</span>
+                    <strong id="summaryDate">-</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Time</span>
+                    <strong id="summaryTime">-</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Guests</span>
+                    <strong id="summaryGuests">-</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Table</span>
+                    <strong id="summaryTable">-</strong>
+                </div>
+
+            </div>
+
+
+            <h3>Payment Method</h3>
+
+
+            <div class="payment-options">
+
+                <div
+                    id="cardOption"
+                    class="payment-option selected"
+                >
+
+                    <strong>💳 Card</strong>
+
+                    <p>
+                        Pay deposit using card
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="cashOption"
+                    class="payment-option"
+                >
+
+                    <strong>💵 Cash</strong>
+
+                    <p>
+                        Pay deposit at the café
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="cardFields"
+                class="card-fields show"
+            >
+
+                <div class="form-grid">
+
+                    <div class="form-group full">
+
+                        <label>Cardholder Name</label>
+
+                        <input
+                            id="cardName"
+                            placeholder="Demo Cardholder"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>Card Number</label>
+
+                        <input
+                            id="cardNumber"
+                            placeholder="1234 5678 9012 3456"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Expiry</label>
+
+                        <input
+                            id="expiry"
+                            placeholder="MM/YY"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>CVV</label>
+
+                        <input
+                            id="cvv"
+                            placeholder="123"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary">
+
+                <div class="summary-row">
+
+                    <span>Reservation Deposit</span>
+
+                    <strong>EGP 200</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="buttons">
+
+                <button
+                    type="button"
+                    class="secondary"
+                    id="backButton"
+                >
+                    ← Back
+                </button>
+
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="confirmButton"
+                >
+                    Confirm Booking →
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= CONFIRMATION ================= -->
+
+        <div
+            id="confirmationSection"
+            class="section"
+        >
+
+            <div class="success">
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+                <h2>Booking Confirmed!</h2>
+
+                <p>
+                    Your table has been successfully reserved.
+                </p>
+
+
+                <div class="booking-id">
+
+                    Booking ID
+
+                    <strong id="bookingId">
+                        CC-000000
+                    </strong>
+
+                </div>
+
+
+                <div class="summary">
+
+                    <div class="summary-row">
+                        <span>Name</span>
+                        <strong id="finalName">-</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Date</span>
+                        <strong id="finalDate">-</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Time</span>
+                        <strong id="finalTime">-</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Guests</span>
+                        <strong id="finalGuests">-</strong>
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="newReservationButton"
+                >
+                    Make Another Reservation
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    /* =========================================
+       ELEMENTS
+    ========================================= */
+
+    const continueButton =
+        document.getElementById("continueButton");
+
+    const backButton =
+        document.getElementById("backButton");
+
+    const confirmButton =
+        document.getElementById("confirmButton");
+
+    const newReservationButton =
+        document.getElementById("newReservationButton");
+
+
+    const reservationSection =
+        document.getElementById("reservationSection");
+
+    const paymentSection =
+        document.getElementById("paymentSection");
+
+    const confirmationSection =
+        document.getElementById("confirmationSection");
+
+
+    const step1 =
+        document.getElementById("step1");
+
+    const step2 =
+        document.getElementById("step2");
+
+    const step3 =
+        document.getElementById("step3");
+
+
+    /* =========================================
+       CONTINUE TO PAYMENT
+    ========================================= */
+
+    continueButton.addEventListener("click", function () {
+
+        console.log("Continue button clicked");
+
+
+        let valid = true;
+
+
+        /* NAME */
+
+        const name =
+            document.getElementById("name").value.trim();
+
+        if (name === "") {
+
+            document.getElementById("nameError").style.display =
+                "block";
+
+            valid = false;
+
+        } else {
+
+            document.getElementById("nameError").style.display =
+                "none";
+        }
+
+
+        /* EMAIL */
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        if (
+            email === "" ||
+            !email.includes("@")
+        ) {
+
+            document.getElementById("emailError").style.display =
+                "block";
+
+            valid = false;
+
+        } else {
+
+            document.getElementById("emailError").style.display =
+                "none";
+        }
+
+
+        /* PHONE */
+
+        const phone =
+            document.getElementById("phone").value.trim();
+
+        if (phone === "") {
+
+            document.getElementById("phoneError").style.display =
+                "block";
+
+            valid = false;
+
+        } else {
+
+            document.getElementById("phoneError").style.display =
+                "none";
+        }
+
+
+        /* GUESTS */
+
+        const guests =
+            document.getElementById("guests").value;
+
+        if (guests === "") {
+
+            document.getElementById("guestsError").style.display =
+                "block";
+
+            valid = false;
+
+        } else {
+
+            document.getElementById("guestsError").style.display =
+                "none";
+        }
+
+
+        /* DATE */
+
+        const date =
+            document.getElementById("date").value;
+
+        if (date === "") {
+
+            document.getElementById("dateError").style.display =
+                "block";
+
+            valid = false;
+
+        } else {
+
+            document.getElementById("dateError").style.display =
+                "none";
+        }
+
+
+        /* TIME */
+
+        const time =
+            document.getElementById("time").value;
+
+        if (time === "") {
+
+            document.getElementById("timeError").style.display =
+                "block";
+
+            valid = false;
+
+        } else {
+
+            document.getElementById("timeError").style.display =
+                "none";
+        }
+
+
+        /* STOP IF INVALID */
+
+        if (!valid) {
+
+            return;
+        }
+
+
+        /* =====================================
+           PUT DATA INTO SUMMARY
+        ===================================== */
+
+        document.getElementById("summaryName").textContent =
+            name;
+
+        document.getElementById("summaryDate").textContent =
+            date;
+
+        document.getElementById("summaryTime").textContent =
+            time;
+
+        document.getElementById("summaryGuests").textContent =
+            guests;
+
+        document.getElementById("summaryTable").textContent =
+            document.getElementById("table").value;
+
+
+        /* =====================================
+           CHANGE SECTION
+        ===================================== */
+
+        reservationSection.classList.remove("active");
+
+        paymentSection.classList.add("active");
+
+
+        /* =====================================
+           CHANGE STEPS
+        ===================================== */
+
+        step1.classList.remove("active");
+
+        step1.classList.add("done");
+
+        step2.classList.add("active");
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+
+
+
+    /* =========================================
+       BACK
+    ========================================= */
+
+    backButton.addEventListener("click", function () {
+
+        paymentSection.classList.remove("active");
+
+        reservationSection.classList.add("active");
+
+
+        step2.classList.remove("active");
+
+        step1.classList.remove("done");
+
+        step1.classList.add("active");
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+
+
+
+    /* =========================================
+       PAYMENT METHOD
+    ========================================= */
+
+    let paymentMethod = "card";
+
+
+    const cardOption =
+        document.getElementById("cardOption");
+
+    const cashOption =
+        document.getElementById("cashOption");
+
+    const cardFields =
+        document.getElementById("cardFields");
+
+
+    cardOption.addEventListener("click", function () {
+
+        paymentMethod = "card";
+
+        cardOption.classList.add("selected");
+
+        cashOption.classList.remove("selected");
+
+        cardFields.classList.add("show");
+
+    });
+
+
+    cashOption.addEventListener("click", function () {
+
+        paymentMethod = "cash";
+
+        cashOption.classList.add("selected");
+
+        cardOption.classList.remove("selected");
+
+        cardFields.classList.remove("show");
+
+    });
+
+
+
+    /* =========================================
+       CONFIRM BOOKING
+    ========================================= */
+
+    confirmButton.addEventListener("click", function () {
+
+        /* Card validation */
+
+        if (paymentMethod === "card") {
+
+            const cardName =
+                document.getElementById("cardName").value.trim();
+
+            const cardNumber =
+                document.getElementById("cardNumber").value.trim();
+
+            const expiry =
+                document.getElementById("expiry").value.trim();
+
+            const cvv =
+                document.getElementById("cvv").value.trim();
+
+
+            if (
+                cardName === "" ||
+                cardNumber === "" ||
+                expiry === "" ||
+                cvv === ""
+            ) {
+
+                alert(
+                    "Please complete the demo card details."
+                );
+
+                return;
+            }
+
+        }
+
+
+        /* Generate Booking ID */
+
+        const random =
+            Math.floor(
+                100000 + Math.random() * 900000
+            );
+
+
+        const bookingID =
+            "CC-" + random;
+
+
+        document.getElementById("bookingId").textContent =
+            bookingID;
+
+
+        /* Final information */
+
+        document.getElementById("finalName").textContent =
+            document.getElementById("name").value;
+
+        document.getElementById("finalDate").textContent =
+            document.getElementById("date").value;
+
+        document.getElementById("finalTime").textContent =
+            document.getElementById("time").value;
+
+        document.getElementById("finalGuests").textContent =
+            document.getElementById("guests").value;
+
+
+        /* Change section */
+
+        paymentSection.classList.remove("active");
+
+        confirmationSection.classList.add("active");
+
+
+        /* Change steps */
+
+        step2.classList.remove("active");
+
+        step2.classList.add("done");
+
+        step3.classList.add("active");
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+
+
+
+    /* =========================================
+       NEW RESERVATION
+    ========================================= */
+
+    newReservationButton.addEventListener(
+        "click",
+        function () {
+
+            location.reload();
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
